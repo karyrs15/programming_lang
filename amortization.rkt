@@ -57,7 +57,7 @@
 (define (amortization_aux months pmt actual_interest acum_interest amt cap_tb_paid cap_paid ir)
   (writeln months)
   (set! lst_months (append lst_months (list months)))
-  (set! lst_cap_to_be_paid_y (append lst_cap_to_be_paid_y (list cap_tb_paid)))
+  (set! lst_cap_to_be_paid_y (append lst_cap_to_be_paid_y (list (list months (list amt actual_interest)))))
   (cond
     [(< months 1) #t]
     [else (amortization_aux (- months 1) pmt
@@ -71,7 +71,9 @@
 
 
 (define (amortization_plot)
-  (plot (points (map vector (reverse lst_months) lst_cap_to_be_paid_y) #:color 'red)))
+  (plot (stacked-histogram lst_cap_to_be_paid_y
+                         #:labels '("Amortization" "Interest"))
+      #:legend-anchor 'top-right))
 
 
   
