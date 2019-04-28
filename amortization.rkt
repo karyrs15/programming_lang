@@ -52,15 +52,15 @@
 (define lst_cap_to_be_paid_y '()) 
 
 (define (amortization_table loan months ir)
-  (amortization_aux 12 0 (payment loan months ir) 0 0 0 loan 0 ir))
+  (amortization_aux months (payment loan months ir) 0 0 0 loan 0 ir))
 
-(define (amortization_aux months months_count pmt actual_interest acum_interest amt cap_tb_paid cap_paid ir)
-  (writeln acum_interest)
-  (set! lst_months (append lst_months (list months_count)))
+(define (amortization_aux months pmt actual_interest acum_interest amt cap_tb_paid cap_paid ir)
+  (writeln months)
+  (set! lst_months (append lst_months (list months)))
   (set! lst_cap_to_be_paid_y (append lst_cap_to_be_paid_y (list cap_tb_paid)))
   (cond
-    [(>= months_count months) #t]
-    [else (amortization_aux months (+ months_count 1) pmt
+    [(< months 1) #t]
+    [else (amortization_aux (- months 1) pmt
                  (interest cap_tb_paid ir) (+ (interest cap_tb_paid ir) acum_interest)
                  (amortization pmt (interest cap_tb_paid ir))
                  (capital_to_be_paid cap_tb_paid (amortization pmt (interest cap_tb_paid ir)))
@@ -71,7 +71,7 @@
 
 
 (define (amortization_plot)
-  (plot (points (map vector lst_months lst_cap_to_be_paid_y) #:color 'red)))
+  (plot (points (map vector (reverse lst_months) lst_cap_to_be_paid_y) #:color 'red)))
 
 
   
