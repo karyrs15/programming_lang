@@ -7,6 +7,22 @@
 
 ; Author: Karina Reyes
 
+; Based on code from https://dev.to/goober99/learn-racket-by-example-gui-programming-3epm
+(define number-field%
+  (class text-field%
+    ; Add init variables to define allowed range
+    (init min-value max-value)
+    (define min-allowed min-value)
+    (define max-allowed max-value)
+    (super-new)
+    (define/override (on-focus on?)
+      (unless on?
+        (define current-value (string->number (send this get-value)))
+        (unless (and current-value
+                     (>= current-value min-allowed)
+                     (<= current-value max-allowed))
+          (send this set-value (~a min-allowed)))))))
+
 ; Contract: pmt : number number number -> number
 ; Purpose: to calculate the payment per month
 ; Definition: 
@@ -83,16 +99,22 @@
       #:legend-anchor 'top-right))
   
 (define frame (new frame% [label "Amortization"]
-                   [width 400] [height 300]))
+                   [width 450] [height 300]))
 
-(define loan_field (new text-field% [parent frame]
-                        [label "Amount of total loan: "]))
+(define loan_field (new number-field% [parent frame]
+                        [label "Amount of total loan (0-100M): "]
+                        [min-value 0]
+                        [max-value 100000000]))
 
-(define months_field (new text-field% [parent frame]
-                        [label "Number of months: "]))
+(define months_field (new number-field% [parent frame]
+                        [label "Number of months (1-12): "]
+                        [min-value 1]
+                        [max-value 50]))
 
-(define ir_field (new text-field% [parent frame]
-                        [label "Interest rate per year: "]))
+(define ir_field (new number-field% [parent frame]
+                        [label "Interest rate per year (0-100): "]
+                        [min-value 0]
+                        [max-value 100]))
 
 (define (show_results button event)
   (amortization_table
