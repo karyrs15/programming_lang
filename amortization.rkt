@@ -48,20 +48,26 @@
 ; test
 ;(total_payment 1000000 12 25)
 
+(define (total_interest total_pmt loan)
+  (- total_pmt loan))
+
 (define lst_months '())
-(define lst_cap_to_be_paid_y '()) 
+(define lst_amortization_interest '())
 
 (define (amortization_table loan months ir)
-  (amortization_aux months (payment loan months ir) 0 0 0 loan 0 ir))
+  (amortization_aux months 0 (payment loan months ir) 0 0 loan 0 ir)
+  (new button% [parent frame]
+             [label "Graph"]
+             [callback show_graph]))
 
-(define (amortization_aux months pmt actual_interest acum_interest amt cap_tb_paid cap_paid ir)
-  (writeln months)
-  (set! lst_months (append lst_months (list months)))
-  (set! lst_cap_to_be_paid_y (append lst_cap_to_be_paid_y (list (list months (list amt actual_interest)))))
+(define (amortization_aux months months_count pmt actual_interest amt cap_tb_paid cap_paid ir)
+  (writeln months_count)
+  (set! lst_months (append lst_months (list months_count)))
+  (set! lst_amortization_interest (append lst_amortization_interest (list (list months_count (list amt actual_interest)))))
   (cond
-    [(< months 1) #t]
-    [else (amortization_aux (- months 1) pmt
-                 (interest cap_tb_paid ir) (+ (interest cap_tb_paid ir) acum_interest)
+    [(>= months_count months) #t]
+    [else (amortization_aux months (+ months_count 1) pmt
+                 (interest cap_tb_paid ir)
                  (amortization pmt (interest cap_tb_paid ir))
                  (capital_to_be_paid cap_tb_paid (amortization pmt (interest cap_tb_paid ir)))
                  (capital cap_paid (amortization pmt (interest cap_tb_paid ir))) ir)]))
@@ -71,16 +77,14 @@
 
 
 (define (amortization_plot)
-  (plot (stacked-histogram lst_cap_to_be_paid_y
-                         #:labels '("Amortization" "Interest"))
+  (plot (stacked-histogram lst_amortization_interest
+                         #:labels '("Amortization" "Interest")
+                         #:colors '(2 1)
+                         #:line-colors '(2 1))
       #:legend-anchor 'top-right))
-
-
   
-(define frame (new frame% [label "Amortization"]))
- 
-(define msg (new message% [parent frame]
-                 [label "This program helps you to calculate the total amount of interest you pay for a loan"]))
+(define frame (new frame% [label "Amortization"]
+                   [width 400] [height 400]))
 
 (define loan_field (new text-field% [parent frame]
                         [label "Amount of total loan: "]))
@@ -91,20 +95,20 @@
 (define ir_field (new text-field% [parent frame]
                         [label "Interest rate per year: "]))
 
-(define (main button event)
+(define (show_results button event)
   (amortization_table
    (string->number (send loan_field get-value))
    (string->number (send months_field get-value))
-   (string->number (send ir_field get-value)))
-  (new button% [parent frame]
-             [label "Graph"]
-             [callback main_graph]))
+   (string->number (send ir_field get-value))))
 
-(define (main_graph button event)
+(define (show_graph button event)
   (amortization_plot))
 
 (new button% [parent frame]
              [label "Show results"]
-             [callback main])
+             [callback show_results])
+
+(define msg_results (new message% [parent frame]
+                         [label "Results display here: "]))
 
 (send frame show #t)
