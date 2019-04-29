@@ -56,12 +56,11 @@
 
 (define (amortization_table loan months ir)
   (amortization_aux months 0 (payment loan months ir) 0 0 loan 0 ir)
-  (new button% [parent frame]
-             [label "Graph"]
-             [callback show_graph]))
+  (send result_monthly_pmt set-label (string-append "Monthly payment: " (~r (payment loan months ir))))
+  (send result_interest_pmt set-label (string-append "Total interest payment: " (~r (total_interest (total_payment loan months ir) loan))))
+  (send result_total_pmt set-label (string-append "Total payment: " (~r (total_payment loan months ir)))))
 
 (define (amortization_aux months months_count pmt actual_interest amt cap_tb_paid cap_paid ir)
-  (writeln months_count)
   (set! lst_months (append lst_months (list months_count)))
   (set! lst_amortization_interest (append lst_amortization_interest (list (list months_count (list amt actual_interest)))))
   (cond
@@ -84,7 +83,7 @@
       #:legend-anchor 'top-right))
   
 (define frame (new frame% [label "Amortization"]
-                   [width 400] [height 400]))
+                   [width 400] [height 300]))
 
 (define loan_field (new text-field% [parent frame]
                         [label "Amount of total loan: "]))
@@ -108,7 +107,27 @@
              [label "Show results"]
              [callback show_results])
 
-(define msg_results (new message% [parent frame]
-                         [label "Results display here: "]))
+(define panel (new vertical-panel% [parent frame]
+                   [alignment (list 'left 'top)]
+                   [min-width 400]))
+
+(define msg_results (new message% [parent panel]
+                         [label "RESULTS: "]))
+
+(define result_monthly_pmt (new message% [parent panel]
+                                [label "Monthly payment: "]
+                                [min-width 400]))
+
+(define result_interest_pmt (new message% [parent panel]
+                                [label "Total interest payment: "]
+                                [min-width 400]))
+
+(define result_total_pmt (new message% [parent panel]
+                                [label "Total payment: "]
+                                [min-width 400]))
+
+(define graph_btn (new button% [parent panel]
+             [label "Show graph"]
+             [callback show_graph]))
 
 (send frame show #t)
