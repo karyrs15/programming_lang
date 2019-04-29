@@ -107,9 +107,9 @@
                         [max-value 100000000]))
 
 (define months_field (new number-field% [parent frame]
-                        [label "Number of months (1-12): "]
+                        [label "Number of months (1-360): "]
                         [min-value 1]
-                        [max-value 50]))
+                        [max-value 360]))
 
 (define ir_field (new number-field% [parent frame]
                         [label "Interest rate per year (0-100): "]
