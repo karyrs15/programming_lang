@@ -95,7 +95,7 @@
   (cond
     [(empty? lst_amortization_interest) (send msg_errors set-label "*** ERROR: Introduce some data ***")]
     [else (plot (stacked-histogram lst_amortization_interest
-                         #:labels '("Amortization" "Interest")
+                         #:labels '("Principal" "Interest")
                          #:colors '(2 1)
                          #:line-colors '(2 1))
       #:legend-anchor 'top-right
