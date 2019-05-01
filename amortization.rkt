@@ -92,11 +92,18 @@
 
 
 (define (amortization_plot)
-  (plot (stacked-histogram lst_amortization_interest
+  (cond
+    [(empty? lst_amortization_interest) (send msg_errors set-label "*** ERROR: Introduce some data ***")]
+    [else (plot (stacked-histogram lst_amortization_interest
                          #:labels '("Amortization" "Interest")
                          #:colors '(2 1)
                          #:line-colors '(2 1))
-      #:legend-anchor 'top-right))
+      #:legend-anchor 'top-right
+      #:title "Loan payments"
+      #:x-label "Months"
+      #:y-label "Amount"
+      #:width 500
+      #:height 500)]))
   
 (define frame (new frame% [label "Amortization"]
                    [width 450] [height 300]))
@@ -117,10 +124,15 @@
                         [max-value 100]))
 
 (define (show_results button event)
-  (amortization_table
-   (string->number (send loan_field get-value))
-   (string->number (send months_field get-value))
-   (string->number (send ir_field get-value))))
+  (cond
+    [(and (non-empty-string? (send loan_field get-value))
+          (non-empty-string? (send months_field get-value))
+          (non-empty-string? (send ir_field get-value)))
+     (amortization_table
+      (string->number (send loan_field get-value))
+      (string->number (send months_field get-value))
+      (string->number (send ir_field get-value)))]
+    [else (send msg_errors set-label "*** ERROR: Introduce some data ***")]))
 
 (define (show_graph button event)
   (amortization_plot))
@@ -151,5 +163,9 @@
 (define graph_btn (new button% [parent panel]
              [label "Show graph"]
              [callback show_graph]))
+
+(define msg_errors (new message% [parent frame]
+                         [label " "]
+                         [min-width 400]))
 
 (send frame show #t)
