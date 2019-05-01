@@ -137,9 +137,9 @@
 (define (show_graph button event)
   (amortization_plot))
 
-(new button% [parent frame]
+(define showresults_btn (new button% [parent frame]
              [label "Show results"]
-             [callback show_results])
+             [callback show_results]))
 
 (define panel (new vertical-panel% [parent frame]
                    [alignment (list 'left 'top)]
