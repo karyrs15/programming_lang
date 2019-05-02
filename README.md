@@ -2,7 +2,7 @@
 
 Final project for programming languages class.
 
-## Amortization project
+## Amortization program
 
 This program allows user to compute amortization results and plot them in a stacked histogram to see how interest rates and payment periods affect loans payment.
 
